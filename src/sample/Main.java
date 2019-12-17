@@ -4,9 +4,13 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
+import java.awt.*;
 
 public class Main extends Application {
 
@@ -19,10 +23,9 @@ public class Main extends Application {
         root = new Pane();
         root.setPrefSize(200, 200);
         Scene scene = new Scene(root);
-        stage.setTitle("Navigator");
+        stage.setTitle("Pong Game");
         stage.setScene(scene);
         initStartPane();
-        initGamePane();
         root.getChildren().add(startPane);
         stage.show();
     }
@@ -34,6 +37,7 @@ public class Main extends Application {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
+                initGamePane();
                 root.getChildren().setAll(gamePane);
             }
         });
@@ -41,7 +45,10 @@ public class Main extends Application {
     }
 
     private void initGamePane() {
-        // game
+        Canvas canvas = new Canvas();
+        GraphicsContext context = canvas.getGraphicsContext2D();
+        gamePane = new Pane(canvas);
+        
     }
 
 
