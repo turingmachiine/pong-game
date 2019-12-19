@@ -103,7 +103,7 @@ public class GameRoomServer {
                 game.ballSpeedY = new Random().nextInt(2) == 0 ? 1: -1;
             }
             try {
-                Thread.sleep(15);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
