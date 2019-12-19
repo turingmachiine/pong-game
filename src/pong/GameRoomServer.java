@@ -90,7 +90,7 @@ public class GameRoomServer {
                         (game.ballY + Constants.BALL_RADIUS > game.playerOneY) && (game.ballY - Constants.BALL_RADIUS <
                         game.playerOneY + Constants.PLAYER_HEIGHT)) {
                     if (Math.abs(game.ballSpeedX) < 8) {
-                        game.ballSpeedX += game.ballSpeedX > 0 ? 1 : - 1;
+                        game.ballSpeedX += game.ballSpeedX > 0 ? 1 : -1;
                     }
                     game.ballSpeedY = Math.abs(game.ballSpeedY) <= 1 ? game.ballSpeedY * (new Random().nextInt(2) + 1) :
                             (int) Math.signum(1.0 * game.ballSpeedY);
@@ -103,7 +103,7 @@ public class GameRoomServer {
                 game.ballSpeedY = new Random().nextInt(2) == 0 ? 1: -1;
             }
             try {
-                Thread.sleep(20);
+                Thread.sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
