@@ -14,7 +14,7 @@ public class GameRoomServer {
     Game game = new Game();
     boolean flag = false;
     DataOutputStream[] outs;
-    private boolean flag1 = true;
+    private boolean[] ready = {false, false};
 
     public GameRoomServer() {
         clients = new ClientHandler[2];
@@ -51,7 +51,9 @@ public class GameRoomServer {
                 game.setGameStarted(true);
                 flag = true;
             }
-
+            if (!game.isGameStarted() && ready[0] && ready[1]) {
+                game.setGameStarted(true);
+            }
             System.out.println("send coordinates...");
             if (activePlayers == 2) {
                 for (int i = 0; i < 2; i++) {
@@ -73,9 +75,15 @@ public class GameRoomServer {
                 if (game.ballX + Constants.BALL_RADIUS < 0) {
                     game.setSecondScroe(game.getSecondScroe() + 1);
                     game.setGameStarted(false);
+                    for (int i = 0; i < 2; i++) {
+                        ready[i] = false;
+                    }
                 } else if (game.ballX - Constants.BALL_RADIUS > Constants.WIDTH) {
                     game.setFirstScore(game.getFirstScore() + 1) ;
                     game.setGameStarted(false);
+                    for (int i = 0; i < 2; i++) {
+                        ready[i] = false;
+                    }
                 } else if ((game.ballX + Constants.BALL_RADIUS >= Constants.WIDTH - Constants.PLAYER_WIDTH) &&
                         (game.ballY + Constants.BALL_RADIUS > game.playerTwoY) && (game.ballY - Constants.BALL_RADIUS <
                         game.playerTwoY + Constants.PLAYER_HEIGHT) || (game.ballX <= Constants.PLAYER_WIDTH) &&
@@ -95,7 +103,7 @@ public class GameRoomServer {
                 game.ballSpeedY = new Random().nextInt(2) == 0 ? 1: -1;
             }
             try {
-                Thread.sleep(30);
+                Thread.sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -130,9 +138,17 @@ public class GameRoomServer {
                     System.out.println("waiting for moves");
                     while ((inputLine = in.readLine()) != null) {
                         if (inputLine.split(":")[0].equals("1")) {
-                            game.setPlayerOneY(Double.parseDouble(inputLine.split(":")[1]));
+                            if (inputLine.split(":")[1].equals("startGame")) {
+                                ready[0] = true;
+                            } else {
+                                game.setPlayerOneY(Double.parseDouble(inputLine.split(":")[1]));
+                            }
                         } else if (inputLine.split(":")[0].equals("2")) {
-                            game.setPlayerTwoY(Double.parseDouble(inputLine.split(":")[1]));
+                            if (inputLine.split(":")[1].equals("startGame")) {
+                                ready[1] = true;
+                            } else {
+                                game.setPlayerTwoY(Double.parseDouble(inputLine.split(":")[1]));
+                            }
                         }
                     }
                 }
