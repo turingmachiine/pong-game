@@ -1,14 +1,18 @@
 package pong;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -16,6 +20,10 @@ import java.net.Socket;
 import java.util.Random;
 
 public class MainClient extends Application {
+
+    Scene startScene;
+    Scene gameScene;
+    Stage stage;
 
     StackPane gamePane;
     Canvas canvas;
@@ -29,13 +37,52 @@ public class MainClient extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
+        initStartScene();
+        stage.setTitle("Pong Game");
+        stage.setScene(startScene);
+        stage.show();
+        System.out.println("success!");
+
+     }
+
+
+    private void initGamePane() {
+        canvas = new Canvas(Constants.WIDTH, Constants.HEIGHT);
+        context = canvas.getGraphicsContext2D();
+
+        gamePane = new StackPane(canvas);
+    }
+
+    private void initStartScene() {
+        System.out.println("init of Start Scene...");
+        Pane startPane = new Pane();
+        VBox vBox = new VBox();
+        vBox.setSpacing(10);
+        TextField host = new TextField();
+        TextField port = new TextField();
+        Button button = new Button("connect");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                initGameScene(host.getText(),Integer.parseInt(port.getText()));
+                stage.setScene(gameScene);
+                stage.show();
+            }
+        });
+        vBox.getChildren().addAll(host, port, button);
+        startPane.getChildren().addAll(vBox);
+        startScene = new Scene(startPane);
+    }
+
+    private void initGameScene(String host, int port) {
         System.out.print("initialization of Pane...");
         initGamePane();
         System.out.println("success!");
         System.out.print("trying to setup socket...");
         Socket socket  = null;
         try {
-            socket = new Socket(HOST, PORT);
+            socket = new Socket(host, port);
             in = new DataInputStream(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
             name = in.readInt();
@@ -65,21 +112,10 @@ public class MainClient extends Application {
             }
         });
 
-        System.out.print("showing the screen...");
-        Scene scene = new Scene(gamePane);
-        primaryStage.setTitle("Pong Game");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        System.out.print("init scene...");
+        gameScene = new Scene(gamePane);
         System.out.println("success!");
 
-     }
-
-
-    private void initGamePane() {
-        canvas = new Canvas(Constants.WIDTH, Constants.HEIGHT);
-        context = canvas.getGraphicsContext2D();
-
-        gamePane = new StackPane(canvas);
     }
 
     public static void main(String[] args) { launch(args);
